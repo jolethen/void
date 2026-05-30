@@ -1,3 +1,7 @@
+-- Safe way to capture the absolute mod path before the engine loses track of it
+local my_mod_name = minetest.get_current_modname()
+local my_mod_path = minetest.get_modpath(my_mod_name)
+
 -- 1. Tell the C++ engine to completely turn off its terrain shapes
 minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations", true)
 minetest.set_mapgen_setting("mgv7_spflags", "no mountains, no ridges", true)
@@ -48,6 +52,8 @@ minetest.register_on_mods_loaded(function()
     if minetest.clear_registered_decorations then minetest.clear_registered_decorations() end
     if minetest.clear_registered_ores then minetest.clear_registered_ores() end
 
-    -- Bulletproof direct pathing for your Lemehost server environment
-    dofile("worldmods/void/nodes.lua")
+    -- Use the pre-approved secure path we saved at the top to satisfy Mod Security
+    if my_mod_path then
+        dofile(my_mod_path .. "/nodes.lua")
+    end
 end)
