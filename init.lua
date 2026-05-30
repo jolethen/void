@@ -1,3 +1,6 @@
+-- Safe way to capture the current mod name before any delayed loops run
+local my_mod_name = minetest.get_current_modname()
+
 -- 1. Tell the C++ engine to completely turn off its terrain shapes
 minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations", true)
 minetest.set_mapgen_setting("mgv7_spflags", "no mountains, no ridges", true)
@@ -38,7 +41,7 @@ minetest.register_on_generated(function(minp, maxp, blockseed)
     vm:write_to_map()
 end)
 
--- 3. Block mods from attempting to load biomes/ores later
+-- 3. Block mods from attempting to load biomes/ores later and load our custom nodes
 minetest.register_on_mods_loaded(function()
     minetest.registered_decorations = {}
     minetest.registered_biomes = {}
@@ -48,30 +51,9 @@ minetest.register_on_mods_loaded(function()
     if minetest.clear_registered_decorations then minetest.clear_registered_decorations() end
     if minetest.clear_registered_ores then minetest.clear_registered_ores() end
 
-    -- 4. THE ULTIMATE OVERRIDE: 
-    -- If stone or water somehow gets written by the engine, force it to be completely invisible and non-solid like air.
-    local nodes_to_vaporize = {
-        "default:stone", 
-        "default:water_source", 
-        "default:river_water_source",
-        "mcl_core:stone",         -- Minecraft-clone base stone (if using VoxeLibre)
-        "mcl_worlds:water_source" -- Minecraft-clone base water (if using VoxeLibre)
-    }
-
-    for _, node_name in ipairs(nodes_to_vaporize) do
-        if minetest.registered_nodes[node_name] then
-            -- Override their properties to behave exactly like air
-            minetest.override_item(node_name, {
-                drawtype = "airlike",
-                paramtype = "light",
-                sunlight_propagates = true,
-                walkable = false,
-                pointable = false,
-                diggable = false,
-                buildable_to = true,
-                air_equivalent = true,
-                groups = {not_in_creative_inventory = 1},
-            })
-        end
+    -- Safe execution using our pre-captured dynamic mod name
+    local modpath = minetest.get_modpath(my_mod_name)
+    if modpath then
+        dofile(modpath .. "/nodes.lua")
     end
 end)
