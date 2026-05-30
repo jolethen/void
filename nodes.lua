@@ -1,5 +1,5 @@
--- Dynamically fetch the current mod folder name
-local current_mod = minetest.get_current_modname()
+-- Dynamically fetch the mod name, falling back to our passed variable if executed late
+local current_mod = minetest.get_current_modname() or void_canvas_current_mod
 
 -- 1. Register a custom Solid Stone Block 
 minetest.register_node(current_mod .. ":stone", {
@@ -102,3 +102,6 @@ minetest.register_alias_force("mapgen_stone", "air")
 minetest.register_alias_force("mapgen_water_source", "air")
 minetest.register_alias_force("mapgen_river_water_source", "air")
 minetest.register_alias_force("mapgen_lava_source", "air")
+
+-- Clear the temporary global variable to keep things clean
+void_canvas_current_mod = nil
