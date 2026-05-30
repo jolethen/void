@@ -1,14 +1,14 @@
--- 1. Register a custom Solid Stone Block 
-minetest.register_node("void:stone", {
+-- 1. Register a custom Solid Stone Block (Using the leading override colon to force registration)
+minetest.register_node(":void:stone", {
     description = "Builder's Stone",
     tiles = {"default_stone.png"}, 
-    is_ground_content = false, -- Stops the engine's cave generator from cutting holes in your placed builds
+    is_ground_content = false, 
     groups = {cracky = 3, stone = 1},
     sounds = minetest.node_sound_stone_defaults and minetest.node_sound_stone_defaults() or nil,
 })
 
 -- 2. Register a custom Water Block (Stationary Source)
-minetest.register_node("void:water", {
+minetest.register_node(":void:water", {
     description = "Builder's Water",
     drawtype = "liquid",
     tiles = {
@@ -51,7 +51,7 @@ minetest.register_node("void:water", {
 })
 
 -- 3. Register the Flowing Water variant
-minetest.register_node("void:water_flowing", {
+minetest.register_node(":void:water_flowing", {
     description = "Flowing Builder's Water",
     drawtype = "flowingliquid",
     tiles = {"default_water.png"},
