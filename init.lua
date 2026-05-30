@@ -51,16 +51,9 @@ minetest.register_on_mods_loaded(function()
     if minetest.clear_registered_decorations then minetest.clear_registered_decorations() end
     if minetest.clear_registered_ores then minetest.clear_registered_ores() end
 
-    -- Safe execution using our pre-captured dynamic mod name
+    -- Load the nodes file using the explicit modpath structure
     local modpath = minetest.get_modpath(my_mod_name)
     if modpath then
-        -- Set the handshake global right here so nodes.lua can catch it instantly
-        _G.active_void_modname = my_mod_name
-        
-        -- The exact modpath execution you requested
         dofile(modpath .. "/nodes.lua")
-        
-        -- Safely clear it only AFTER the entire file has fully finished registering
-        _G.active_void_modname = nil
     end
 end)
