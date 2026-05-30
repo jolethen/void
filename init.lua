@@ -5,7 +5,7 @@ minetest.set_mapgen_setting("mgv7_spflags", "no mountains, no ridges", true)
 -- Get the ID of pure air
 local c_air = minetest.get_content_id("air")
 
--- 2. Wipe EVERY remaining node to air, executing after everything else
+-- 2. Wipe EVERY remaining node to air during the generation phase
 minetest.register_on_generated(function(minp, maxp, blockseed)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
     local data = vm:get_data()
@@ -16,7 +16,6 @@ minetest.register_on_generated(function(minp, maxp, blockseed)
         for y = emin.y, emax.y do
             for x = emin.x, emax.x do
                 local vi = area:index(x, y, z)
-                -- Force everything (including engine-generated stone/water) into air
                 data[vi] = c_air
             end
         end
@@ -48,4 +47,31 @@ minetest.register_on_mods_loaded(function()
     if minetest.clear_registered_biomes then minetest.clear_registered_biomes() end
     if minetest.clear_registered_decorations then minetest.clear_registered_decorations() end
     if minetest.clear_registered_ores then minetest.clear_registered_ores() end
+
+    -- 4. THE ULTIMATE OVERRIDE: 
+    -- If stone or water somehow gets written by the engine, force it to be completely invisible and non-solid like air.
+    local nodes_to_vaporize = {
+        "default:stone", 
+        "default:water_source", 
+        "default:river_water_source",
+        "mcl_core:stone",         -- Minecraft-clone base stone (if using VoxeLibre)
+        "mcl_worlds:water_source" -- Minecraft-clone base water (if using VoxeLibre)
+    }
+
+    for _, node_name in ipairs(nodes_to_vaporize) do
+        if minetest.registered_nodes[node_name] then
+            -- Override their properties to behave exactly like air
+            minetest.override_item(node_name, {
+                drawtype = "airlike",
+                paramtype = "light",
+                sunlight_propagates = true,
+                walkable = false,
+                pointable = false,
+                diggable = false,
+                buildable_to = true,
+                air_equivalent = true,
+                groups = {not_in_creative_inventory = 1},
+            })
+        end
+    end
 end)
