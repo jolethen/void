@@ -54,6 +54,8 @@ minetest.register_on_mods_loaded(function()
     -- Safe execution using our pre-captured dynamic mod name
     local modpath = minetest.get_modpath(my_mod_name)
     if modpath then
+        -- Pass the mod name across the file boundary safely to prevent the nil crash
+        void_canvas_current_mod = my_mod_name
         dofile(modpath .. "/nodes.lua")
     end
 end)
