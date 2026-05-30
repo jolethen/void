@@ -1,6 +1,3 @@
--- Safe way to capture the current mod name before any delayed loops run
-local my_mod_name = minetest.get_current_modname()
-
 -- 1. Tell the C++ engine to completely turn off its terrain shapes
 minetest.set_mapgen_setting("mg_flags", "nocaves, nodungeons, light, decorations", true)
 minetest.set_mapgen_setting("mgv7_spflags", "no mountains, no ridges", true)
@@ -51,9 +48,6 @@ minetest.register_on_mods_loaded(function()
     if minetest.clear_registered_decorations then minetest.clear_registered_decorations() end
     if minetest.clear_registered_ores then minetest.clear_registered_ores() end
 
-    -- Load the nodes file using the explicit modpath structure
-    local modpath = minetest.get_modpath(my_mod_name)
-    if modpath then
-        dofile(modpath .. "/nodes.lua")
-    end
+    -- Bulletproof direct pathing for your Lemehost server environment
+    dofile("worldmods/void/nodes.lua")
 end)
