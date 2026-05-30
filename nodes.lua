@@ -1,8 +1,5 @@
--- Dynamically fetch the mod name, safely pulling from the active engine global sequence
-local current_mod = minetest.get_current_modname() or _G.active_void_modname or "void"
-
 -- 1. Register a custom Solid Stone Block 
-minetest.register_node(current_mod .. ":stone", {
+minetest.register_node("void:stone", {
     description = "Builder's Stone",
     tiles = {"default_stone.png"}, 
     is_ground_content = false, -- Stops the engine's cave generator from cutting holes in your placed builds
@@ -11,7 +8,7 @@ minetest.register_node(current_mod .. ":stone", {
 })
 
 -- 2. Register a custom Water Block (Stationary Source)
-minetest.register_node(current_mod .. ":water", {
+minetest.register_node("void:water", {
     description = "Builder's Water",
     drawtype = "liquid",
     tiles = {
@@ -44,8 +41,8 @@ minetest.register_node(current_mod .. ":water", {
     buildable_to = true,
     drowning = 1,
     liquidtype = "source",
-    liquid_alternative_flowing = current_mod .. ":water_flowing",
-    liquid_alternative_source = current_mod .. ":water",
+    liquid_alternative_flowing = "void:water_flowing",
+    liquid_alternative_source = "void:water",
     liquid_viscosity = 1,
     liquid_renewable = true,
     liquid_range = 8, 
@@ -54,7 +51,7 @@ minetest.register_node(current_mod .. ":water", {
 })
 
 -- 3. Register the Flowing Water variant
-minetest.register_node(current_mod .. ":water_flowing", {
+minetest.register_node("void:water_flowing", {
     description = "Flowing Builder's Water",
     drawtype = "flowingliquid",
     tiles = {"default_water.png"},
@@ -89,8 +86,8 @@ minetest.register_node(current_mod .. ":water_flowing", {
     buildable_to = true,
     drowning = 1,
     liquidtype = "flowing",
-    liquid_alternative_flowing = current_mod .. ":water_flowing",
-    liquid_alternative_source = current_mod .. ":water",
+    liquid_alternative_flowing = "void:water_flowing",
+    liquid_alternative_source = "void:water",
     liquid_viscosity = 1,
     liquid_range = 8,
     post_effect_color = {a = 64, r = 0, g = 60, b = 120},
